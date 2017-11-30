@@ -7,7 +7,7 @@ import pandas as pd
 import json
 
 
-from  pymongo import MongoClient
+from pymongo import MongoClient
 from openpyxl import load_workbook
 
 yesterday = datetime.datetime.now() - datetime.timedelta(days = 1)
@@ -41,7 +41,7 @@ header.to_excel(writer, sheet_name="closing_info", startrow=0, index=False)
 
 i = 1
 for code in sd.index:
-    #TODO leve 2 strategy
+    #TODO level 2 strategy
     try:
         p = ts.get_hist_data(code, start=datestr, end=datestr, retry_count=10)
         p = p.assign(stock_code=code)

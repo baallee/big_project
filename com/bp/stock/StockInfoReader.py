@@ -30,7 +30,9 @@ book = load_workbook(fileName)
 writer = pd.ExcelWriter(fileName, engine='openpyxl') 
 writer.book = book
 
+#level 1 strategy
 sd = sd[(sd.pe <= 20) & (sd.pe > 0) & (sd.totalAssets <= 200000)]
+
 header = pd.DataFrame(columns=["open","high","close","low","volume","price_change","p_change",
                                "ma5","ma10","ma20","v_ma5","v_ma10","v_ma20","turnover",
                                "stock_code","load_date"])
@@ -39,6 +41,7 @@ header.to_excel(writer, sheet_name="closing_info", startrow=0, index=False)
 
 i = 1
 for code in sd.index:
+    #TODO leve 2 strategy
     try:
         p = ts.get_hist_data(code, start=datestr, end=datestr, retry_count=10)
         p = p.assign(stock_code=code)

@@ -10,7 +10,7 @@
     "bootstrap",
     "theme"
   ],
-  "license": "MIT",
+  "license": "GNU",
   "ignore": [
     "**/.*",
     "node_modules",

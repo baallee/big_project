@@ -10,7 +10,7 @@ var pkg = require('./package.json');
 // Set the banner content
 var banner = ['/*!\n',
     ' * Start Bootstrap - <%= pkg.title %> v<%= pkg.version %> (<%= pkg.homepage %>)\n',
-    ' * Copyright 2013-' + (new Date()).getFullYear(), ' <%= pkg.author %>\n',
+    ' * Copyright 2017-' + (new Date()).getFullYear(), ' <%= pkg.author %>\n',
     ' * Licensed under <%= pkg.license.type %> \n',
     ' */\n',
     ''
@@ -40,7 +40,7 @@ gulp.task('minify-css', ['less'], function() {
 
 // Copy JS to dist
 gulp.task('js', function() {
-    return gulp.src(['js/sb-admin-2.js'])
+    return gulp.src(['static/js/sb-admin-2.js'])
         .pipe(header(banner, { pkg: pkg }))
         .pipe(gulp.dest('static/dist/js'))
         .pipe(browserSync.reload({
@@ -50,7 +50,7 @@ gulp.task('js', function() {
 
 // Minify JS
 gulp.task('minify-js', ['js'], function() {
-    return gulp.src('js/sb-admin-2.js')
+    return gulp.src('static/js/sb-admin-2.js')
         .pipe(uglify())
         .pipe(header(banner, { pkg: pkg }))
         .pipe(rename({ suffix: '.min' }))

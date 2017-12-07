@@ -5,14 +5,14 @@
   "homepage": "http://18.217.69.57/",
   "author": "Baal",
   "license": {
-    "type": "MIT",
-    "url": "https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE"
+    "type": "GUN"
   },
   "devDependencies": {
     "browser-sync": "^2.13.0",
     "gulp": "^3.9.1",
     "gulp-clean-css": "^2.0.10",
     "gulp-header": "^1.8.7",
+    "gulp-install": "^1.1.0",
     "gulp-less": "^3.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^1.5.4"

@@ -1,9 +1,9 @@
 {
-  "name": "startbootstrap-sb-admin-2",
-  "title": "SB Admin 2",
-  "version": "3.3.7+1",
-  "homepage": "http://startbootstrap.com/template-overviews/sb-admin-2",
-  "author": "Start Bootstrap",
+  "name": "bootstrap-demo",
+  "title": "Bootstrap Demo",
+  "version": "1.0.0",
+  "homepage": "http://18.217.69.57/",
+  "author": "Baal",
   "license": {
     "type": "MIT",
     "url": "https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE"
@@ -19,6 +19,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/BlackrockDigital/startbootstrap-sb-admin-2.git"
+    "url": "git://github.com/baallee/big_project"
   }
 }

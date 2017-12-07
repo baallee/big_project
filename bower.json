@@ -1,11 +1,11 @@
 {
-  "name": "startbootstrap-sb-admin-2",
-  "homepage": "http://startbootstrap.com/template-overviews/sb-admin-2/",
-  "version": "3.3.7+1",
+  "name": "bootstrap-demo",
+  "homepage": "http://18.217.69.57/",
+  "version": "1.0.0",
   "authors": [
-    "David Miller"
+    "Baal"
   ],
-  "description": "A free, open source, Bootstrap admin theme created by Start Bootstrap",
+  "description": "Bootstrap Demo",
   "keywords": [
     "bootstrap",
     "theme"

@@ -1,4 +1,4 @@
-from flask import Flask,g,request,render_template
+from flask import Flask,g,request,render_template,make_response
 import time
 import hashlib
 import xml.etree.ElementTree as E

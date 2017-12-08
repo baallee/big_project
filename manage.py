@@ -1,7 +1,6 @@
-from flask import Flask,g,request,make_response
+from flask import Flask
 
 app = Flask(__name__)
-app.debug=True
 
 @app.route('/')
 def login():

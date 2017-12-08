@@ -76,9 +76,9 @@ def wxlogin():
             if(hashlib.sha1(s).hexdigest()==signature):
                 return make_response(echostr)
             else:  
-                return ""  
-        except Exception, Argument:  
-            return Argument 
+                return "login failed!"  
+    except Exception, Argument:  
+        return Argument 
 
 if __name__ == '__main__':
     app.run()

@@ -1,4 +1,6 @@
+import web  
 from flask import Flask, render_template
+
 app = Flask(__name__)
 
 
@@ -59,7 +61,29 @@ def grid():
 def stocks():
     return render_template('stocks.html')
 
-
+@app.route('/wxlogin')
+def wxlogin():
+    try:  
+        data = web.input()  
+        if len(data) == 0:  
+            return "could not get request"  
+        signature = data.signature  
+        timestamp = data.timestamp  
+        nonce = data.nonce  
+        echostr = data.echostr  
+        token = "big_project"  
+        list = [token, timestamp, nonce]  
+        list.sort()  
+        sha1 = hashlib.sha1()  
+        map(sha1.update, list)  
+        hashcode = sha1.hexdigest()  
+        print "handle/GET func: hashcode, signature: ", hashcode, signature  
+        if hashcode == signature:  
+            return echostr  
+        else:  
+            return ""  
+    except Exception, Argument:  
+        return Argument 
 
 if __name__ == '__main__':
     app.run()

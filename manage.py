@@ -1,7 +1,7 @@
 from flask import Flask,g,request,render_template,make_response
 import time
 import hashlib
-import xml.etree.ElementTree as E
+import xml.etree.ElementTree as ET
 
 app = Flask(__name__)
 
@@ -74,7 +74,7 @@ def wechat_auth():
         s = [timestamp,nonce,token]
         s.sort()
         s = ''.join(s)
-        if (hashlib.sha1(s).hexdigest() == signature):
+        if (hashlib.sha1(s.encode(encoding='utf_8', errors='strict')).hexdigest() == signature):
             return make_response(echostr)
     else:
         rec = request.stream.read()

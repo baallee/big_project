@@ -1,5 +1,4 @@
-import web  
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -64,26 +63,22 @@ def stocks():
 @app.route('/wxlogin')
 def wxlogin():
     try:  
-        data = web.input()  
-        if len(data) == 0:  
-            return "could not get request"  
-        signature = data.signature  
-        timestamp = data.timestamp  
-        nonce = data.nonce  
-        echostr = data.echostr  
-        token = "big_project"  
-        list = [token, timestamp, nonce]  
-        list.sort()  
-        sha1 = hashlib.sha1()  
-        map(sha1.update, list)  
-        hashcode = sha1.hexdigest()  
-        print "handle/GET func: hashcode, signature: ", hashcode, signature  
-        if hashcode == signature:  
-            return echostr  
-        else:  
-            return ""  
-    except Exception, Argument:  
-        return Argument 
+        if request.method=='GET':
+            token='big_project'
+            data=request.args
+            signature=data.get('signature','')
+            timestamp=data.get('timestamp','')
+            nonce =data.get('nonce','')
+            echostr=data.get('echostr','')
+            s=[timestamp,nonce,token]
+            s.sort()
+            s=''.join(s)
+            if(hashlib.sha1(s).hexdigest()==signature):
+                return make_response(echostr)
+            else:  
+                return ""  
+        except Exception, Argument:  
+            return Argument 
 
 if __name__ == '__main__':
     app.run()

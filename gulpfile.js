@@ -62,6 +62,12 @@ gulp.task('minify-js', ['js'], function() {
 
 // Copy vendor libraries from /bower_components into /vendor
 gulp.task('copy', function() {
+	gulp.src(['bower_components/angular/angular.js', 'bower_components/angular/angular.min.js'])
+    .pipe(gulp.dest('static/vendor/angular'))
+    
+    gulp.src(['bower_components/angular-route/angular-route.js', 'bower_components/angular-route/angular-route.min.js'])
+    .pipe(gulp.dest('static/vendor/angular-route'))
+	
     gulp.src(['bower_components/bootstrap/dist/**/*', '!**/npm.js', '!**/bootstrap-theme.*', '!**/*.map'])
         .pipe(gulp.dest('static/vendor/bootstrap'))
 

@@ -1,9 +1,22 @@
-from flask import Flask,request,render_template,make_response
-import time
+import time,datetime
 import hashlib
 import xml.etree.ElementTree as ET
+import logging
+from pymongo import MongoClient
+from flask import Flask,request,render_template,make_response,jsonify,json
+
+
+logger = logging.getLogger('big_project')
+hdlr = logging.FileHandler('logs/web.log')
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr) 
+logger.setLevel(logging.WARNING)
+
 
 app = Flask(__name__)
+client = MongoClient('localhost', 27017)
+db = client.big_project
 
 @app.route('/')
 def login():
@@ -61,6 +74,57 @@ def grid():
 @app.route('/stocks.html')
 def stocks():
     return render_template('stocks.html')
+
+@app.route('/dashboard.html')
+def dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/test.html')
+def test():
+    return render_template('test.html')
+
+@app.route('/getStockList', methods=['POST'])
+def getStockList():
+    yesterday = datetime.datetime.now() - datetime.timedelta(days = 1)
+    datestr = yesterday.strftime("%Y-%m-%d")
+    logger.info("trying to get stocks list at date : " + datestr)
+    
+    try:
+        stocks = db.stocks.find({"load_date":datestr})
+        stocksList = []
+        for stock in stocks:
+            #print stock
+            stockItem = {  'load_date':stock['load_date'],
+                           'stock_code':stock['stock_code'],
+                           'name':stock['name'],
+                           'industry':stock['industry'],
+                           'area':stock['area'],
+                           'pe':stock['pe'],
+                           'outstanding':stock['outstanding'],
+                           'totals':stock['totals'],
+                           'totalAssets':stock['totalAssets'],
+                           'liquidAssets':stock['liquidAssets'],
+                           'fixedAssets':stock['fixedAssets'],
+                           'reserved':stock['reserved'],
+                           'reservedPerShare':stock['reservedPerShare'],
+                           'esp':stock['esp'],
+                           'bvps':stock['bvps'],
+                           'pb':stock['pb'],
+                           'timeToMarket':stock['timeToMarket'],
+                           'undp':stock['undp'],
+                           'perundp':stock['perundp'],
+                           'rev':stock['rev'],
+                           'profit':stock['profit'],
+                           'gpr':stock['gpr'],
+                           'npr':stock['npr'],
+                           'holders':stock['holders'],
+                           'id':str(stock['_id'])}
+            stocksList.append(stockItem)
+    except Exception as e:
+        logging.error(e)
+        return str(e)
+    return json.dumps(stocksList)
+
 
 @app.route('/wxlogin',methods=['GET','POST'])
 def wechat_auth():

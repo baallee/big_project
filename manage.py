@@ -1,10 +1,11 @@
 import datetime
 import logUtils,logging
 import SecurityManager as sm
+import codecs
 from User import User
 from DatabaseManager import DatabaseManager 
 from flask import Flask,render_template,json,request,make_response
-from flask_login import LoginManager,login_required,login_user,logout_user 
+from flask_login import LoginManager,login_required,login_user,logout_user,current_user
 
 
 #init logging module
@@ -139,13 +140,13 @@ def dashboard():
 def wechat_auth():
     return sm.wechatAuth()
 
-@app.route('/getStockList', methods=['POST'])
+@app.route('/portfolios')
 @login_required
-def getStockList():
-    yesterday = datetime.datetime.now() - datetime.timedelta(days = 1)
+def getPortfolios():
+    yesterday = datetime.datetime.now()
     datestr = yesterday.strftime("%Y-%m-%d")
-    log.info("trying to get stocks list at date : " + datestr)
-    
+    log.info("trying to get portfolio list user : %s ", current_user)
+    '''
     try:
         stocks = db.stocks.find({"load_date":datestr})
         stocksList = []
@@ -177,10 +178,15 @@ def getStockList():
                            'holders':stock['holders'],
                            'id':str(stock['_id'])}
             stocksList.append(stockItem)
+    '''
+    try:
+        with codecs.open("static/data/portfolios.js", encoding="utf-8") as json_data:
+            data = json_data.read()
+            data = json.loads(data)
+            log.info(data)
     except Exception as e:
         log.error(e)
-        return str(e)
-    return json.dumps(stocksList)
+    return json.dumps(data)
 
 
 if __name__ == '__main__':

@@ -21,4 +21,4 @@ class User(UserMixin):
         self.password = "pass1234"
         
     def __repr__(self):
-        return "%d/%s/%s" % (self.id, self.name, self.password)
+        return "%s" % (self.name)

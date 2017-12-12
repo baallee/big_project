@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import hashlib,time
 import logUtils
 import xml.etree.ElementTree as ET
+import code
 
 wxlogin = WeixinLogin('wx78ff74a2f031e715', '76b6e8235ff5febbbdedbb52e2a6183c')
 log = logUtils.getLogger()
@@ -11,6 +12,9 @@ log = logUtils.getLogger()
 def handleLogin():
     try:
         code = request.args.get("code")
+        state = request.args.get("state")
+        log.info("request code:" + code)
+        log.info("request state:" + state)
         if not code:
             return "ERR_INVALID_CODE", 400
         

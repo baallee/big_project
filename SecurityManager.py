@@ -1,25 +1,29 @@
-from flask import request,redirect,make_response,jsonify,json
+from flask import request,redirect,make_response
 from weixin import WeixinLogin
 from datetime import datetime, timedelta
 import hashlib,time
-import logging
+import logUtils
 import xml.etree.ElementTree as ET
 
 wxlogin = WeixinLogin('wx78ff74a2f031e715', '76b6e8235ff5febbbdedbb52e2a6183c')
-logger = logging.getLogger('big_project')
+log = logUtils.getLogger()
 
 def handleLogin():
-    code = request.args.get("code")
-    if not code:
-        return "ERR_INVALID_CODE", 400
-    
-    data = wxlogin.access_token(code)
-    logger.info(data)
-    openid = data.openid
-    resp = redirect("index.html")
-    expires = datetime.now() + timedelta(days=1)
-    resp.set_cookie("openid", openid, expires=expires)
-    return resp
+    try:
+        code = request.args.get("code")
+        if not code:
+            return "ERR_INVALID_CODE", 400
+        
+        data = wxlogin.access_token(code)
+        log.info(data)
+        openid = data.openid
+        resp = redirect("index.html")
+        expires = datetime.now() + timedelta(days=1)
+        resp.set_cookie("openid", openid, expires=expires)
+    except Exception as e:
+        log.error(e)
+    else:
+        return resp
 
 def wechatAuth():
     if request.method == 'GET':

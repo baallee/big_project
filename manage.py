@@ -1,17 +1,11 @@
 import datetime
-import logging
+import logUtils
 import SecurityManager as sm
 from pymongo import MongoClient
 from flask import Flask,render_template,json
 
-
-logger = logging.getLogger('big_project')
-hdlr = logging.FileHandler('logs/web.log')
-formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-hdlr.setFormatter(formatter)
-logger.addHandler(hdlr) 
-logger.setLevel(logging.WARNING)
-
+log = logUtils.getLogger()
+log.info("server starting....")
 
 app = Flask(__name__)
 client = MongoClient('localhost', 27017)
@@ -28,7 +22,6 @@ def logout():
 
 @app.route('/index.html')
 def index():
-    
     return render_template('index.html')
 
 @app.route('/tables.html')
@@ -91,7 +84,7 @@ def wechat_auth():
 def getStockList():
     yesterday = datetime.datetime.now() - datetime.timedelta(days = 1)
     datestr = yesterday.strftime("%Y-%m-%d")
-    logger.info("trying to get stocks list at date : " + datestr)
+    log.info("trying to get stocks list at date : " + datestr)
     
     try:
         stocks = db.stocks.find({"load_date":datestr})
@@ -125,10 +118,11 @@ def getStockList():
                            'id':str(stock['_id'])}
             stocksList.append(stockItem)
     except Exception as e:
-        logging.error(e)
+        log.error(e)
         return str(e)
     return json.dumps(stocksList)
 
 
 if __name__ == '__main__':
     app.run()
+    log.info("server started....")

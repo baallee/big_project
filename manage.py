@@ -1,10 +1,10 @@
-import datetime
+
 import logUtils,logging
 import SecurityManager as sm
 from User import User
 from DatabaseManager import DatabaseManager 
 from flask import Flask,render_template,json,request,make_response
-from flask_login import LoginManager,login_required,login_user,logout_user 
+from flask_login import LoginManager,login_required,login_user,logout_user,current_user
 
 
 #init logging module
@@ -13,7 +13,7 @@ logUtils.init()
 log = logging.getLogger("manager")
 log.info("server starting....")
 
-db = DatabaseManager().db
+dbMgr = DatabaseManager()
 
 #init web server
 app = Flask(__name__)
@@ -33,11 +33,7 @@ login_manager.login_view = "login"
 # callback to reload the user object        
 @login_manager.user_loader
 def load_user(openid):
-    if (db.users.find_one({"openid":openid}) == None):
-        return None
-    else:
-        userinfo = db.users.find_one({"openid":openid})
-        return User(userinfo)
+    return dbMgr.findUserByOpenId(openid)
 
 @app.route('/')
 def landing():
@@ -49,10 +45,9 @@ def login():
         username = request.form['username']
         password = request.form['password']
         #load user from users table using username    
-        mogouser = db.users.find_one({"nickname":username})
+        user = dbMgr.findUserByName(username)
         #TODO password hardcode
-        if mogouser is not None and password == "pass1234":
-            user = User(mogouser)
+        if user is not None and password == "pass1234":
             login_user(user)
             return render_template('index.html', user=user)
         else:
@@ -139,48 +134,10 @@ def dashboard():
 def wechat_auth():
     return sm.wechatAuth()
 
-@app.route('/getStockList', methods=['POST'])
+@app.route('/portfolios')
 @login_required
-def getStockList():
-    yesterday = datetime.datetime.now() - datetime.timedelta(days = 1)
-    datestr = yesterday.strftime("%Y-%m-%d")
-    log.info("trying to get stocks list at date : " + datestr)
-    
-    try:
-        stocks = db.stocks.find({"load_date":datestr})
-        stocksList = []
-        for stock in stocks:
-            #print stock
-            stockItem = {  'load_date':stock['load_date'],
-                           'stock_code':stock['stock_code'],
-                           'name':stock['name'],
-                           'industry':stock['industry'],
-                           'area':stock['area'],
-                           'pe':stock['pe'],
-                           'outstanding':stock['outstanding'],
-                           'totals':stock['totals'],
-                           'totalAssets':stock['totalAssets'],
-                           'liquidAssets':stock['liquidAssets'],
-                           'fixedAssets':stock['fixedAssets'],
-                           'reserved':stock['reserved'],
-                           'reservedPerShare':stock['reservedPerShare'],
-                           'esp':stock['esp'],
-                           'bvps':stock['bvps'],
-                           'pb':stock['pb'],
-                           'timeToMarket':stock['timeToMarket'],
-                           'undp':stock['undp'],
-                           'perundp':stock['perundp'],
-                           'rev':stock['rev'],
-                           'profit':stock['profit'],
-                           'gpr':stock['gpr'],
-                           'npr':stock['npr'],
-                           'holders':stock['holders'],
-                           'id':str(stock['_id'])}
-            stocksList.append(stockItem)
-    except Exception as e:
-        log.error(e)
-        return str(e)
-    return json.dumps(stocksList)
+def getPortfolios():
+    return dbMgr.getPortfolios(current_user)
 
 
 if __name__ == '__main__':

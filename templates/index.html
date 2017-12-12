@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="bigProjectApp">
 
 <head>
 
@@ -16,6 +16,8 @@
 
     <!-- MetisMenu CSS -->
     <link href="static/vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+	<link href="static/vendor/angular-ui-select/select.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
     <link href="static/dist/css/sb-admin-2.css" rel="stylesheet">
@@ -37,7 +39,7 @@
 	
 	
 	
-<body ng-app="bigProjectApp">
+<body ng-controller="ModalCtrl">
 
     <div id="wrapper">
 
@@ -246,7 +248,7 @@
                 </li>
                 <!-- /.dropdown -->
                 <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="">
                         <i class="fa fa-fw">
                         	<img ng-src="{{user.headimgurl}}" width="18px" height="18px"></img>
                         </i> 
@@ -362,9 +364,6 @@
                                 <li>
                                     <a href="#!stocks">Stocks Demo Page</a>
                                 </li>
-                                <li>
-                                    <a href="login.html">Login Page</a>
-                                </li>
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
@@ -391,54 +390,71 @@
 <!-- Metis Menu Plugin JavaScript -->
 <script src="static/vendor/metisMenu/metisMenu.min.js"></script>
 
-	
-<!-- -->
+
+<!-- angular -->
 <script src="static/vendor/angular/angular.min.js"></script>
 <script src="static/vendor/angular-route/angular-route.min.js"></script>
+<script src="static/vendor/angular-sanitize/angular-sanitize.min.js"></script>
+<script src="static/vendor/angular-ui-select/select.min.js"></script>
 
+
+<script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
+	
 <!-- Custom Theme JavaScript -->  
 <script src="static/dist/js/sb-admin-2.min.js"></script>
 
+
+
 <script>
-var app = angular.module("bigProjectApp", ["ngRoute"]);
-app.config(function($routeProvider) {
-    $routeProvider
-    .when("/dashboard", {
-        templateUrl : "dashboard.html"
-    })
-    .when("/flot", {
-        templateUrl : "flot.html"
-    })
-    .when("/morris", {
-        templateUrl : "morris.html"
-    })
-    .when("/tables", {
-        templateUrl : "tables.html"
-    })
-    .when("/forms", {
-        templateUrl : "forms.html"
-    })
-    .when("/panels-wells", {
-        templateUrl : "panels-wells.html"
-    })
-    .when("/buttons", {
-        templateUrl : "buttons.html"
-    })
-    .when("/notifications", {
-        templateUrl : "notifications.html"
-    })
-    .when("/typography", {
-        templateUrl : "typography.html"
-    })
-    .when("/icons", {
-        templateUrl : "icons.html"
-    })
-    .when("/grid", {
-        templateUrl : "grid.html"
-    })
-    .when("/stocks", {
-        templateUrl : "stocks.html"
-    });
-});
+
+	var app = angular.module("bigProjectApp", [ "ngRoute", "ngSanitize", "ui.bootstrap", "ui.select"]);
+
+	app.controller("ModalCtrl", function($scope, $uibModal, $log, $document) {
+
+		$scope.openAddPortfolio = function() {
+			var modalInstance = $uibModal.open({
+				ariaLabelledBy : 'modal-title',
+				ariaDescribedBy : 'modal-body',
+				templateUrl : 'addPortfolio.html',
+				controller : function($scope, $uibModalInstance) {
+					$scope.ok = function() {
+						$uibModalInstance.close();
+					};
+					$scope.cancel = function() {
+						$uibModalInstance.dismiss('cancel');
+					};
+				}
+			});
+		};
+	});
+
+	app.config(function($routeProvider) {
+		$routeProvider.when("/dashboard", {
+			templateUrl : "dashboard.html"
+		}).when("/flot", {
+			templateUrl : "flot.html"
+		}).when("/morris", {
+			templateUrl : "morris.html"
+		}).when("/tables", {
+			templateUrl : "tables.html"
+		}).when("/forms", {
+			templateUrl : "forms.html"
+		}).when("/panels-wells", {
+			templateUrl : "panels-wells.html"
+		}).when("/buttons", {
+			templateUrl : "buttons.html"
+		}).when("/notifications", {
+			templateUrl : "notifications.html"
+		}).when("/typography", {
+			templateUrl : "typography.html"
+		}).when("/icons", {
+			templateUrl : "icons.html"
+		}).when("/grid", {
+			templateUrl : "grid.html"
+		}).when("/stocks", {
+			templateUrl : "stocks.html",
+			controller : "ModalCtrl"
+		});
+	});
 </script>     
 </html>

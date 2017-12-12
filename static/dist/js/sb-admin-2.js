@@ -1,5 +1,5 @@
 /*!
- * Start Bootstrap - Bootstrap Demo v1.0.0 (http://18.217.69.57/)
+ * Start Bootstrap - Bootstrap Angularjs flask Demo v1.0.0 (http://18.217.69.57/)
  * Copyright 2017-2017 Baal
  * Licensed under GUN 
  */

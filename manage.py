@@ -1,10 +1,12 @@
 import datetime
-import logUtils
+import logUtils,logging
 import SecurityManager as sm
 from pymongo import MongoClient
 from flask import Flask,render_template,json
 
-log = logUtils.getLogger()
+logUtils.init()
+
+log = logging.getLogger("manager")
 log.info("server starting....")
 
 app = Flask(__name__)
@@ -125,4 +127,3 @@ def getStockList():
 
 if __name__ == '__main__':
     app.run()
-    log.info("server started....")

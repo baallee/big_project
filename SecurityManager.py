@@ -1,13 +1,13 @@
-from flask import request,redirect,make_response
+from flask import request,make_response,render_template
 from weixin import WeixinLogin
 from datetime import datetime, timedelta
 import hashlib,time
-import logUtils
 import xml.etree.ElementTree as ET
-import code
+import logging
+
 
 wxlogin = WeixinLogin('wx78ff74a2f031e715', '76b6e8235ff5febbbdedbb52e2a6183c')
-log = logUtils.getLogger()
+log = logging.getLogger("SecurityManager")
 
 def handleLogin():
     try:
@@ -20,14 +20,18 @@ def handleLogin():
         
         data = wxlogin.access_token(code)
         log.info(data)
-        openid = data.openid
-        resp = redirect("index.html")
+        userinfo = wxlogin.user_info(data.access_token, data.openid)
+        log.info(userinfo)
+        resp = make_response(render_template('index.html', userinfo=userinfo))
         expires = datetime.now() + timedelta(days=1)
+        openid = data.openid
         resp.set_cookie("openid", openid, expires=expires)
+        return resp
     except Exception as e:
         log.error(e)
+        return "Internal Server Error", 500
     else:
-        return resp
+        return "Unknow Error", 500
 
 def wechatAuth():
     if request.method == 'GET':

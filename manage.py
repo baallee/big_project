@@ -1,9 +1,8 @@
-import time,datetime
-import hashlib
-import xml.etree.ElementTree as ET
+import datetime
 import logging
+import SecurityManager as sm
 from pymongo import MongoClient
-from flask import Flask,request,render_template,make_response,jsonify,json
+from flask import Flask,render_template,json
 
 
 logger = logging.getLogger('big_project')
@@ -29,6 +28,7 @@ def logout():
 
 @app.route('/index.html')
 def index():
+    
     return render_template('index.html')
 
 @app.route('/tables.html')
@@ -79,9 +79,13 @@ def stocks():
 def dashboard():
     return render_template('dashboard.html')
 
-@app.route('/test.html')
-def test():
-    return render_template('test.html')
+@app.route("/authorized")
+def authorized():
+    return sm.handleLogin()
+
+@app.route('/wxlogin',methods=['GET','POST'])
+def wechat_auth():
+    return sm.wechatAuth()
 
 @app.route('/getStockList', methods=['POST'])
 def getStockList():
@@ -125,32 +129,6 @@ def getStockList():
         return str(e)
     return json.dumps(stocksList)
 
-
-@app.route('/wxlogin',methods=['GET','POST'])
-def wechat_auth():
-    if request.method == 'GET':
-        token='big_project' #your token
-        data = request.args
-        signature = data.get('signature','')
-        timestamp = data.get('timestamp','')
-        nonce = data.get('nonce','')
-        echostr = data.get('echostr','')
-        s = [timestamp,nonce,token]
-        s.sort()
-        s = ''.join(s)
-        if (hashlib.sha1(s.encode(encoding='utf_8', errors='strict')).hexdigest() == signature):
-            return make_response(echostr)
-    else:
-        rec = request.stream.read()
-        xml_rec = ET.fromstring(rec)
-        tou = xml_rec.find('ToUserName').text
-        fromu = xml_rec.find('FromUserName').text
-        content = xml_rec.find('Content').text
-        xml_rep = "<xml><ToUserName><![CDATA[%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%s</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[%s]]></Content><FuncFlag>0</FuncFlag></xml>"
-        response = make_response(xml_rep % (fromu,tou,str(int(time.time())), content))
-        response.content_type='application/xml'
-        return response
-    return 'Hello weixin!'
 
 if __name__ == '__main__':
     app.run()

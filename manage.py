@@ -1,88 +1,146 @@
 import datetime
 import logUtils,logging
 import SecurityManager as sm
-from pymongo import MongoClient
-from flask import Flask,render_template,json
+from User import User
+from DatabaseManager import DatabaseManager 
+from flask import Flask,render_template,json,request,make_response
+from flask_login import LoginManager,login_required,login_user,logout_user 
 
+
+#init logging module
 logUtils.init()
 
 log = logging.getLogger("manager")
 log.info("server starting....")
 
+db = DatabaseManager().db
+
+#init web server
 app = Flask(__name__)
-client = MongoClient('localhost', 27017)
-db = client.big_project
+# config
+app.config.update(
+    DEBUG = True,
+    SECRET_KEY = 'secret_login'
+)
+
+
+# flask-login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+    
+
+# callback to reload the user object        
+@login_manager.user_loader
+def load_user(openid):
+    if (db.users.find_one({"openid":openid}) == None):
+        return None
+    else:
+        userinfo = db.users.find_one({"openid":openid})
+        return User(userinfo)
 
 @app.route('/')
+def landing():
+    return render_template('login.html')
+
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    return render_template('login.html')
-
-@app.route('/login.html')
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        #load user from users table using username    
+        mogouser = db.users.find_one({"nickname":username})
+        #TODO password hardcode
+        if mogouser is not None and password == "pass1234":
+            user = User(mogouser)
+            login_user(user)
+            return render_template('index.html', user=user)
+        else:
+            return make_response(render_template('login.html', errorcode=401, errormessage="Username or password are not correct."))
+    else:
+        return render_template('login.html')
+    
+@app.route('/logout')
+@login_required
 def logout():
+    logout_user()
     return render_template('login.html')
 
+@app.route("/authorized")
+def authorized():
+    return sm.handleWechatLogin()
 
 @app.route('/index.html')
+@login_required
 def index():
     return render_template('index.html')
 
 @app.route('/tables.html')
+@login_required
 def tables():
     return render_template('tables.html')
 
 @app.route('/flot.html')
+@login_required
 def flot():
     return render_template('flot.html')
 
 @app.route('/morris.html')
+@login_required
 def morris():
     return render_template('morris.html')
 
 @app.route('/forms.html')
+@login_required
 def forms():
     return render_template('forms.html')
 
 @app.route('/panels-wells.html')
+@login_required
 def panelsWells():
     return render_template('panels-wells.html')
 
 @app.route('/buttons.html')
+@login_required
 def buttons():
     return render_template('buttons.html')
 
 @app.route('/notifications.html')
+@login_required
 def notifications():
     return render_template('notifications.html')
 
 @app.route('/typography.html')
+@login_required
 def typography():
     return render_template('typography.html')
 
 @app.route('/icons.html')
+@login_required
 def icons():
     return render_template('icons.html')
 
 @app.route('/grid.html')
+@login_required
 def grid():
     return render_template('grid.html')
 
 @app.route('/stocks.html')
+@login_required
 def stocks():
     return render_template('stocks.html')
 
 @app.route('/dashboard.html')
+@login_required
 def dashboard():
     return render_template('dashboard.html')
-
-@app.route("/authorized")
-def authorized():
-    return sm.handleLogin()
 
 @app.route('/wxlogin',methods=['GET','POST'])
 def wechat_auth():
     return sm.wechatAuth()
 
 @app.route('/getStockList', methods=['POST'])
+@login_required
 def getStockList():
     yesterday = datetime.datetime.now() - datetime.timedelta(days = 1)
     datestr = yesterday.strftime("%Y-%m-%d")

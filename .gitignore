@@ -2,3 +2,5 @@
 /node_modules/
 /bower_components/
 /logs/
+/__pycache__/
+/.settings/

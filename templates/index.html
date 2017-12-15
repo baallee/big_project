@@ -362,7 +362,7 @@
                             <a href="#"><i class="fa fa-files-o fa-fw"></i> Sample Pages<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="#!stocks">Stocks Demo Page</a>
+                                    <a href="#!portfolioDemo">Portfolio Demo Page</a>
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->
@@ -409,19 +409,34 @@
 
 	var app = angular.module("bigProjectApp", [ "ngRoute", "ngSanitize", "ui.bootstrap", "ui.select"]);
 
-	app.controller("ModalCtrl", function($scope, $uibModal, $log, $document) {
+
+	app.controller("ModalCtrl", function($scope, $uibModal, $log, $document, $http, $timeout, $interval) {
+
+		$http({
+			method : 'GET',
+			url : '/stocks/all'
+		}).then(function successCallback(response) {
+			$scope.stocks = response.data;
+		}, function errorCallback(response) {
+			$log.error(response);
+		});
 
 		$scope.openAddPortfolio = function() {
 			var modalInstance = $uibModal.open({
 				ariaLabelledBy : 'modal-title',
 				ariaDescribedBy : 'modal-body',
 				templateUrl : 'addPortfolio.html',
-				controller : function($scope, $uibModalInstance) {
+				scope: $scope,
+				controller : function($scope, $uibModalInstance, $log) {
+					console.log($scope.stocks);
+
+					$scope.selectedItem = undefined;
+
 					$scope.ok = function() {
 						$uibModalInstance.close();
 					};
 					$scope.cancel = function() {
-						$uibModalInstance.dismiss('cancel');
+						$uibModalInstance.close();
 					};
 				}
 			});
@@ -451,8 +466,8 @@
 			templateUrl : "icons.html"
 		}).when("/grid", {
 			templateUrl : "grid.html"
-		}).when("/stocks", {
-			templateUrl : "stocks.html",
+		}).when("/portfolioDemo", {
+			templateUrl : "portfolio.html",
 			controller : "ModalCtrl"
 		});
 	});

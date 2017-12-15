@@ -3,7 +3,7 @@ import logUtils,logging
 import SecurityManager as sm
 from User import User
 from DatabaseManager import DatabaseManager 
-from flask import Flask,render_template,json,request,make_response
+from flask import Flask,render_template,json,request,make_response,url_for, current_app
 from flask_login import LoginManager,login_required,login_user,logout_user,current_user
 
 
@@ -67,63 +67,64 @@ def authorized():
 
 @app.route('/index.html')
 @login_required
-def index():
+def index_html():
     return render_template('index.html')
 
 @app.route('/tables.html')
 @login_required
-def tables():
+def tables_html():
     return render_template('tables.html')
 
 @app.route('/flot.html')
 @login_required
-def flot():
+def flot_html():
     return render_template('flot.html')
 
 @app.route('/morris.html')
 @login_required
-def morris():
+def morris_html():
     return render_template('morris.html')
 
 @app.route('/forms.html')
 @login_required
-def forms():
+def forms_html():
     return render_template('forms.html')
 
 @app.route('/panels-wells.html')
 @login_required
-def panelsWells():
+def panelsWells_html():
     return render_template('panels-wells.html')
 
 @app.route('/buttons.html')
 @login_required
-def buttons():
+def buttons_html():
     return render_template('buttons.html')
 
 @app.route('/notifications.html')
 @login_required
-def notifications():
+def notifications_html():
     return render_template('notifications.html')
 
 @app.route('/typography.html')
 @login_required
-def typography():
+def typography_html():
     return render_template('typography.html')
 
 @app.route('/icons.html')
 @login_required
-def icons():
+def icons_html():
     return render_template('icons.html')
 
 @app.route('/grid.html')
 @login_required
-def grid():
+def grid_html():
     return render_template('grid.html')
 
-@app.route('/stocks.html')
+@app.route('/portfolio.html')
 @login_required
-def stocks():
-    return render_template('stocks.html')
+def portfolio_html():
+    #return  current_app.send_static_file('html/stocks.html')
+    return render_template('portfolio.html')
 
 @app.route('/dashboard.html')
 @login_required
@@ -138,6 +139,12 @@ def wechat_auth():
 @login_required
 def getPortfolios():
     return dbMgr.getPortfolios(current_user)
+
+@app.route('/stocks/<market>')
+@login_required
+def getStocksForSelect(market):
+    log.info(market)
+    return dbMgr.getStocks(market=market)
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 import logUtils,logging
 import SecurityManager as sm
 from DatabaseManager import DatabaseManager 
-from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask,render_template,json,request,make_response
 from flask_login import LoginManager,login_required,login_user,logout_user,current_user
 from StockInfoReader import stockInfoDailyJob
@@ -176,7 +176,7 @@ def getStocksForSelect(market):
 ##################business logic start##################
 
 # BlockingScheduler
-scheduler = BlockingScheduler()
+scheduler = BackgroundScheduler()
 #scheduler.add_job(job, 'cron', day_of_week='1-5', hour=6, minute=30)
 scheduler.add_job(stockInfoDailyJob, 'cron', day_of_week='2-6', hour="1", minute="30")
 scheduler.start()

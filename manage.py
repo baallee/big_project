@@ -178,7 +178,7 @@ def getStocksForSelect(market):
 # BlockingScheduler
 scheduler = BlockingScheduler()
 #scheduler.add_job(job, 'cron', day_of_week='1-5', hour=6, minute=30)
-scheduler.add_job(stockInfoDailyJob, 'cron', day_of_week='1-6', hour="*", minute="*")
+scheduler.add_job(stockInfoDailyJob, 'cron', day_of_week='2-6', hour="1", minute="30")
 scheduler.start()
 
 

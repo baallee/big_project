@@ -1,4 +1,3 @@
-import codecs
 import datetime
 import logging
 from User import User
@@ -16,7 +15,7 @@ class DatabaseManager:
         log.info("connecting to db....")
         client = MongoClient("localhost", 27017)
         self.db = client.big_project
-        log.info("connected to ok")
+        log.info("connected ok....")
         
     def getConnection(self):
         return self.db
@@ -86,6 +85,7 @@ class DatabaseManager:
         except Exception as e:
             log.error(e)
 
+        #datatable need data object
         return json.dumps({ "data" : portfolioList })
     
     
@@ -118,12 +118,10 @@ class DatabaseManager:
     def getStocks(self, market="all", date=None):
         log.info("getStocks market is %s", market)
         if (date == None):
-            #yesterday = datetime.datetime.now() - datetime.timedelta(days = 1)
-            #todo get last load date
-            datestr = "2017-11-30"
-        else:
             yesterday = datetime.datetime.now() - datetime.timedelta(days = 1)
             datestr = yesterday.strftime("%Y-%m-%d")
+        else:
+            datestr = date
             
         try:
             #TODO handle different market

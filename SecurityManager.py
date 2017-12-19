@@ -9,8 +9,6 @@ import logging
 from User import User
 
 
-
-
 wxlogin = WeixinLogin('wx78ff74a2f031e715', '76b6e8235ff5febbbdedbb52e2a6183c')
 log = logging.getLogger("SecurityManager")
 

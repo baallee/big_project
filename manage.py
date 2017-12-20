@@ -134,6 +134,11 @@ def portfolio_html():
 def strategy_html():
     return render_template('strategy.html')
 
+@app.route('/quantify.html')
+@login_required
+def quantify_html():
+    return render_template('quantify.html')
+
 ###################page routing end####################
 
 ###################business logic start##################

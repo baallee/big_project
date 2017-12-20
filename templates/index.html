@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Bootstrap+Angularjs+flask Demo</title>
+    <title>全智策略</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -27,6 +27,7 @@
     <link href="static/vendor/morrisjs/morris.css" rel="stylesheet">
     
   	<!-- DataTable CSS -->
+  	<link href="https://cdn.datatables.net/select/1.2.4/css/select.dataTables.min.css" rel="stylesheet">
 	<link href="static/vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
 	<link href="https://cdn.datatables.net/v/dt/r-2.2.1/datatables.min.css" rel="stylesheet" type="text/css"/>
 
@@ -42,7 +43,7 @@
 	
 </head>
 
-<body ng-controller="ModalCtrl">
+<body ng-controller="controller">
 
     <div id="wrapper">
 
@@ -105,7 +106,9 @@
                         <li>
                             <a href="#!strategy">管理策略</a>
                         </li>
-                        
+                        <li>
+                            <a href="#!quantify">量化交易</a>
+                        </li>
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
@@ -161,13 +164,16 @@
 <script src="static/vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
 <script src="static/vendor/datatables-responsive/dataTables.responsive.js"></script>
 
+
+<script type="text/javascript" src="https://cdn.datatables.net/select/1.2.4/js/dataTables.select.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/v/dt/r-2.2.1/datatables.min.js"></script>
 
 <!-- Custom Theme JavaScript -->  
 <script src="static/dist/js/sb-admin-2.min.js"></script>
 
 <script>
-
+	//global variable
+	
 	var app = angular.module("bigProjectApp", [ "ngRoute", "ngSanitize", "ui.bootstrap", "ui.select"]);
 	//define reusable confirm box modalService
 	angular.module('bigProjectApp').service('modalService', ['$uibModal',
@@ -221,7 +227,8 @@
 
 	}]);
 	
-	app.controller("ModalCtrl", function($scope, $uibModal, $log, $document, $http, $timeout, $interval, modalService) {
+	app.controller("controller", function($scope, $uibModal, $log, $document, $http, $timeout, $interval, modalService) {
+		$log.info("portfolio ctrl init.");
 		//init stock search list
 		$scope.stocks = {{ stocks|safe }}
 
@@ -232,6 +239,8 @@
 					ajax : {
 						'url' : '/portfolios'
 					},
+					rowId: '_id',
+					select: true,
 					columns: [
 			            { "data": "_id" },
 			            { "data": "stock_code" },
@@ -247,15 +256,23 @@
 			            	{ "data": "profit_lost" },
 			            	{ "data": "precentage" }
 			        ],
-					columnDefs : [ {
-						'targets' : 0,
-						'searchable' : false,
-						'orderable' : false,
-						'className' : 'dt-body-center',
-						'render' : function(data, type, full, meta) {
-							return '<input type="checkbox" name="id" value="' + data + '"/>';
-						}
-					} ],
+					columnDefs : [ 
+						{
+							'targets' : 0,
+							'visible' : false
+						},
+						{
+							'targets' : 11,
+							'searchable' : false,
+							'orderable' : false,
+							'className' : 'dt-body-center',
+							'render' : function(data, type, full, meta) {
+								if (data > 0)
+									return '<div class="p-3 mb-2 bg-danger text-white">' + data + '</div>';
+								else 
+									return '<div class="p-3 mb-2 bg-success text-white">' + data + '</div>';
+							}
+						} ],
 					order : [ [ 1, 'asc' ] ],
 					initComplete: function () {
 		                //init checkbox event
@@ -264,9 +281,16 @@
 				            
 				            if ($(this).hasClass("selected")) {
 				                $(this).find("input").prop("checked", true);
+				                $("#del-portolios").removeClass('disabled');
 				            } else {
 				                $(this).find("input").prop("checked", false);
+				                $("#del-portolios").addClass('disabled');
 				            }
+
+				            if ($scope.table.rows(".selected").count() > 0)
+				            		$("#del-portolios").removeClass('disabled');
+				            else
+				            		$("#del-portolios").addClass('disabled');
 				        });
 
 			             // Handle click on "Select all" control
@@ -279,9 +303,11 @@
 			            		if (this.checked){
 			            			$('#dataTables-portfolio tbody').find('input[type="checkbox"]', rows).prop('checked', true);
 			            			$('#dataTables-portfolio tbody').find('tr').addClass('selected');
+			            			$("#del-portolios").removeClass('disabled');
 			            		} else {
 			            			$('#dataTables-portfolio tbody').find('input[type="checkbox"]', rows).prop('checked', false);
 			            			$('#dataTables-portfolio tbody').find('tr').removeClass('selected');
+			            			$("#del-portolios").addClass('disabled');
 			            		}
 			            	});
 		
@@ -303,6 +329,39 @@
 				});
 		
 		$scope.table = portfolioTable;
+		
+		var promise;
+	    
+	    // starts the interval
+	    $scope.start = function() {
+	      	// stops any running interval to avoid two intervals running at the same time
+	    		$scope.stop(); 
+	      
+	      	// store the interval promise
+	      	promise = $interval(function() 
+	    		{
+				$scope.table.ajax.reload();	
+			}, 5000);
+	    };
+	  
+	    // stops the interval
+	    $scope.stop = function() {
+	      	$interval.cancel(promise);
+	    };
+	  
+	    // starting the interval by default
+	    $scope.start();
+ 
+	    // stops the interval when the scope is destroyed,
+	    // this usually happens when a route is changed and 
+	    // the ItemsController $scope gets destroyed. The
+	    // destruction of the ItemsController scope does not
+	    // guarantee the stopping of any intervals, you must
+	    // be responsible for stopping it when the scope is
+	    // is destroyed.
+	    $scope.$on('$destroy', function() {
+	    		$scope.stop();
+	    });
 		
 		//Handle delete portfolio
 		$scope.delPortfolios = function() {
@@ -340,7 +399,7 @@
 		    			});
 		        }
 	        });
-		};
+		}
 		
 		//handle add portfolio
 		$scope.openAddPortfolio = function() {
@@ -386,17 +445,20 @@
 					};
 				}
 			});
-		};
+		}
 	});
 	
 	app.config(function($routeProvider) {
 		$routeProvider
-		.when("/strategy", {
+		.when("/quantify", {
+			templateUrl : "quantify.html",
+			controller : "controller"
+		}).when("/strategy", {
 			templateUrl : "strategy.html",
-			controller : "ModalCtrl"
+			controller : "controller"
 		}).when("/portfolio", {
 			templateUrl : "portfolio.html",
-			controller : "ModalCtrl"
+			controller : "controller"
 		});
 	});
 </script>     

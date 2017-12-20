@@ -52,11 +52,13 @@ class DatabaseManager:
         <th>盈亏百分比</th>
         '''
         df = ts.get_realtime_quotes(portfolio["stock_code"])
-  
+        
+        #TODO for fututure should use transcation table to calc qty and cost
+        
         market_value = int(portfolio["qty"]) * float(df.iloc[0]["price"])
         cost_amount = int(portfolio["qty"]) * float(portfolio["cost"])
         profit_lost = market_value - cost_amount
-
+        precentage = "{percent:.2%}".format(percent=profit_lost/cost_amount)
         portfolioItem = {
             "_id":str(portfolio["_id"]), 
             "stock_code":portfolio["stock_code"], 
@@ -70,7 +72,7 @@ class DatabaseManager:
             "cost":portfolio["cost"], 
             "market_value":market_value, 
             "profit_lost":profit_lost, 
-            "precentage":profit_lost / cost_amount
+            "precentage":precentage
             }
         return portfolioItem
 

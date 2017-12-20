@@ -50,8 +50,8 @@ def stockInfoDailyJob():
             p = ts.get_hist_data(code, start=datestr, end=datestr, retry_count=10)
             p = p.assign(stock_code=code)
             p = p.assign(load_date=datestr)
-        except:
-            log.error("unknow error")
+        except Exception as e:
+            log.error(e)
         else:
             if not p.empty:
                 p.to_excel(writer, sheet_name="closing_info", startrow=i, index=False, header=False)

@@ -400,7 +400,7 @@
 		        }
 	        });
 		}
-		
+	
 		//handle add portfolio
 		$scope.openAddPortfolio = function() {
 			var modalInstance = $uibModal.open({
@@ -438,6 +438,30 @@
 			    			.finally(function() {
 			    				$uibModalInstance.close();
 			    			});
+					};
+	
+					$scope.cancel = function() {
+						$uibModalInstance.close(false);
+					};
+				}
+			});
+		}
+		
+		//handle add portfolio
+		$scope.openAddStrategy = function() {
+			var modalInstance = $uibModal.open({
+				ariaLabelledBy : 'modal-title',
+				ariaDescribedBy : 'modal-body',
+				templateUrl : 'addStrategy.html',
+				scope: $scope,
+				controller : function($scope, $uibModalInstance, $log) {
+					
+					$scope.stock = {};
+					$scope.qty = undefined;
+					$scope.cost = undefined;
+					
+					$scope.submit = function() {
+						alert("test");
 					};
 
 					$scope.cancel = function() {
